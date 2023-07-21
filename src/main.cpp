@@ -101,7 +101,7 @@ void loop()
   log(addrx);
   if (isValidInitialized)
   {
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 10; i++
     {
       time_t t;
       clock_t start = clock();
@@ -117,120 +117,144 @@ void loop()
       // Serial.printf("<%d>\n");
       delay(scanInterval);
       if (!isValidRoop)
-      {
-        if (WiFi.status() != WL_CONNECTED)
+        `
         {
-          std::cout << "Wifi Scan start"
-                    << "\n";
-          // log("Wifi Scan start");
+          if (WiFi.status() != WL_CONNECTED)
+          {
+            std::cout << "Wifi Scan start"
+                      << "\n";
+            // log("Wifi Scan start");
 
-          int n = WiFi.scanNetworks(false, true, false, 200);
-          if (n == 0)
-          {
-            log("---no networks found---");
-          }
-          else
-          {
-            Serial.print(n);
-            Serial.println("---networks found---");
-            for (int i = 0; i < n; ++i)
+            int n = WiFi.scanNetworks(false, true, false, 200);
+            if (n == 0)
             {
-
-              String str2 = WiFi.BSSIDstr(i);
-              str2 = str2.substring(0, 18);
-              // Print SSID and RSSI for each network found
-              if (mitsunami == str2)
+              log("---no networks found---");
+            }
+            else
+            {
+              Serial.print(n);
+              Serial.println("---networks found---");
+              for (int i = 0; i < n; ++i)
               {
-                Serial.print(i + 1);
-                Serial.print(": ");
-                Serial.print(WiFi.SSID(i));
-                Serial.print(" (");
-                Serial.print(WiFi.RSSI(i));
-                Serial.print(") ");
-                Serial.print(WiFi.BSSIDstr(i));
-                Serial.print(" ");
-                Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");
-                delay(10);
-                isValidWifi = true;
-                log("---Wifi is Enable---");
 
-                // static int status = WL_IDLE_STATUS; // the Wifi radio's status
-                const char *ssid = "SecurityCamera";
-                const char *password = "ProcTOSTECkey";
-
-                while (WiFi.status() != WL_CONNECTED)
+                String str2 = WiFi.BSSIDstr(i);
+                str2 = str2.substring(0, 18);
+                // Print SSID and RSSI for each network found
+                if (mitsunami == str2)
                 {
-                  // Serial.printf("Trying to connect to %s\n", ssid);
-                  std::cout << "---"
-                            << "Trying to connect to " << ssid << "---"
+                  Serial.print(i + 1);
+                  Serial.print(": ");
+                  Serial.print(WiFi.SSID(i));
+                  Serial.print(" (");
+                  Serial.print(WiFi.RSSI(i));
+                  Serial.print(") ");
+                  Serial.print(WiFi.BSSIDstr(i));
+                  Serial.print(" ");
+                  Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");
+                  delay(10);
+                  isValidWifi = true;
+                  log("---Wifi is Enable---");
+
+                  // static int status = WL_IDLE_STATUS; // the Wifi radio's status
+                  const char *ssid = "SecurityCamera";
+                  const char *password = "ProcTOSTECkey";
+
+                  while (WiFi.status() != WL_CONNECTED)
+                  {
+                    // Serial.printf("Trying to connect to %s\n", ssid);
+                    std::cout << "---"
+                              << "Trying to connect to " << ssid << "---"
+                              << "\n";
+                    bool done = true;
+                    // WiFi.begin(ssid, password);
+                    // delay(500);
+                    // Serial.print('.');
+                    Wifi.begin(ssid, password);
+                    while (donne)
+                    {
+                      Serial.print("WiFi connecting");
+                      auto last = millis();
+                      while (WiFi.status() = !WL_CONNECTED && last + 5000 > millis())
+                      {
+                        delay(500);
+                        Serial.print(".")
+                      }
+                      if (WiFi.status() == WL_CONNECTED)
+                      {
+                        done = false;
+                      }
+                      else
+                      {
+                        Serial.println("retry");
+                        WiFi.disconnect();
+                        WiFi.reconnect();
+                      }
+                    }
+                  }
+                  // Serial.println("Connected to network");
+                  // Serial.println(WiFi.dnsIP());
+                  std::cout << "---Connected to network---"
                             << "\n";
-                  WiFi.begin(ssid, password);
+                  // std::cout << WiFi.dnsIP() << "\n";
+                  Serial.printf("---IPAdress ");
+                  Serial.print(WiFi.dnsIP());
+                  Serial.println("---");
                   delay(1000);
+                  Serial.println("");
                 }
-                // Serial.println("Connected to network");
-                // Serial.println(WiFi.dnsIP());
-                std::cout << "---Connected to network---"
-                          << "\n";
-                // std::cout << WiFi.dnsIP() << "\n";
-                Serial.printf("---IPAdress ");
-                Serial.print(WiFi.dnsIP());
-                Serial.println("---");
-                delay(1000);
-                Serial.println("");
               }
             }
           }
-        }
-        if (WiFi.status() == WL_CONNECTED)
-        {
-          // Serial.println("Already Connected to network");
-          // Serial.println(WiFi.dnsIP());
-          std::cout << "---Already Connected to network---"
-                    << "\n";
-          Serial.printf("---IPAdress ");
-          Serial.print(WiFi.dnsIP());
-          Serial.println("---");
-          delay(1000);
-          Serial.println("");
-        }
-
-        log("---Listing BLE Sensors---");
-
-        BLEScanResults foundSensors = pBLEScan->start(2, false);
-        int count = foundSensors.getCount();
-
-        // initBLEScan();
-        // esp_task_wdt_reset(); // reset the watchdog timer
-        for (int j = 0; j < count; j++)
-        {
-          BLEAdvertisedDevice bleSensor = foundSensors.getDevice(j);
-          String sensorName = bleSensor.getName().c_str();
-          String address = bleSensor.getAddress().toString().c_str();
-          log(address + " " + j + " " + sensorName);
-          if (addrx == address)
+          if (WiFi.status() == WL_CONNECTED)
           {
-            log("---FIND!!!!---");
-            isValidBle = true;
-            if (isValidBle == true)
+            // Serial.println("Already Connected to network");
+            // Serial.println(WiFi.dnsIP());
+            std::cout << "---Already Connected to network---"
+                      << "\n";
+            Serial.printf("---IPAdress ");
+            Serial.print(WiFi.dnsIP());
+            Serial.println("---");
+            delay(1000);
+            Serial.println("");
+          }
+
+          log("---Listing BLE Sensors---");
+
+          BLEScanResults foundSensors = pBLEScan->start(2, false);
+          int count = foundSensors.getCount();
+
+          // initBLEScan();
+          // esp_task_wdt_reset(); // reset the watchdog timer
+          for (int j = 0; j < count; j++)
+          {
+            BLEAdvertisedDevice bleSensor = foundSensors.getDevice(j);
+            String sensorName = bleSensor.getName().c_str();
+            String address = bleSensor.getAddress().toString().c_str();
+            log(address + " " + j + " " + sensorName);
+            if (addrx == address)
             {
-              log("---BLE On---");
+              log("---FIND!!!!---");
+              isValidBle = true;
+              if (isValidBle == true)
+              {
+                log("---BLE On---");
+              }
+              sleep(1);
+              break;
             }
-            sleep(1);
-            break;
+            if (errorBleCharacter == address)
+            {
+              log("---error!!!!---");
+              errorBleCounter = errorBleCounter + 1;
+              log(errorBleCounter);
+              Serial.println(errorBleCounter);
+              sleep(1);
+              break;
+            }
+            isValidBle = false;
           }
-          if (errorBleCharacter == address)
-          {
-            log("---error!!!!---");
-            errorBleCounter = errorBleCounter + 1;
-            log(errorBleCounter);
-            Serial.println(errorBleCounter);
-            sleep(1);
-            break;
-          }
-          isValidBle = false;
+          esp_task_wdt_reset(); // reset the watchdog timer
         }
-        esp_task_wdt_reset(); // reset the watchdog timer
-      }
       if (!isValidBle)
       {
         log("---BLE Off---");
