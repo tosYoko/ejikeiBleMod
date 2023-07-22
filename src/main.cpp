@@ -17,9 +17,11 @@
 bool isValidRoop;
 bool isValidWifi;
 bool isValidInitialized = false;
+
 int _T;
 int scanTime = 2;      // In seconds
 int scanInterval = 10; // In mili-seconds
+
 int errorBleCounter = 0;
 
 static void log(String message)
@@ -240,6 +242,11 @@ void loop()
             }
             sleep(1);
             break;
+          }
+          if (!scanBLE())
+          {
+            initBLEScan();
+            esp_task_wdt_reset(); // reset the watchdog timer
           }
           if (errorBleCharacter == address)
           {
