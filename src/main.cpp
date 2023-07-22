@@ -2,16 +2,13 @@
 #include <time.h>
 #include <iostream>
 #include <esp_task_wdt.h>
-
 #include "WiFi.h"
 #include <WiFiMulti.h>
-
 #include <BLEDevice.h>
 #include <BLEAdvertisedDevice.h>
 
 #define LED_PIN 32
 #define SW_PIN 33
-
 #define JST 3600 * 9
 
 bool isValidRoop;
@@ -21,7 +18,6 @@ bool isValidInitialized = false;
 int _T;
 int scanTime = 2;      // In seconds
 int scanInterval = 10; // In mili-seconds
-
 int errorBleCounter = 0;
 
 static void log(String message)
@@ -243,9 +239,9 @@ void loop()
             sleep(1);
             break;
           }
-          if (!scanBLE())
+          if (!pBLEScan)
           {
-            initBLEScan();
+            // initBLEScan();
             esp_task_wdt_reset(); // reset the watchdog timer
           }
           if (errorBleCharacter == address)
