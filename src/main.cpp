@@ -11,6 +11,9 @@
 #define SW_PIN 33
 #define JST 3600 * 9
 
+#include <Example.hpp>
+#include <Ble.hpp>
+
 bool isValidRoop;
 bool isValidWifi;
 bool isValidInitialized = false;
@@ -18,7 +21,7 @@ bool isValidInitialized = false;
 int _T;
 int scanTime = 2;      // In seconds
 int scanInterval = 10; // In mili-seconds
-int errorBleCounter = 0;
+// int errorBleCounter = 0;
 
 static void log(String message)
 {
@@ -46,18 +49,19 @@ String translateEncryptionType(wifi_auth_mode_t encryptionType)
   }
 }
 
-const char *deviceName = "BLEScanner";
-BLEScan *pBLEScan;
+// const char *deviceName = "BLEScanner";
+// BLEScan *pBLEScan;
 
 void setup()
 {
-  Serial.begin(115200);
-  log("Setup!");
-  BLEDevice::init(deviceName);
-  pBLEScan = BLEDevice::getScan(); // create new scan
-  pBLEScan->setActiveScan(true);   // active scan uses more power, but get results faster
-  pBLEScan->setInterval(100);
-  pBLEScan->setWindow(99); // less or equal setInterval value
+  // Serial.begin(115200);
+  // log("Setup!");
+  // BLEDevice::init(deviceName);
+  // pBLEScan = BLEDevice::getScan(); // create new scan
+  // pBLEScan->setActiveScan(true);   // active scan uses more power, but get results faster
+  // pBLEScan->setInterval(100);
+  // pBLEScan->setWindow(99); // less or equal setInterval value
+  bleSetup();
 
   esp_task_wdt_init(30, true); // enable panic so ESP32 restarts, interrupt when task executed for more than 3 secons
   esp_task_wdt_add(NULL);      // add current thread to WDT watch
@@ -78,12 +82,12 @@ void loop()
   time_t t;
   struct tm *tm;
   static const char *wd[7] = {"Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat"};
-  bool isValidBle = false;
+  bool isValidBleV = false;
 
   String mitsunami = "1C:6B:CA:00:0C:9A";
-  String addrx = "24:0a:c4:f9:8c:d2";
-  // String errorBleCharacter = "24:0a:c4:f9:8c:d2";
-  String errorBleCharacter = "scan_evt timeout";
+  // String addrx = "24:0a:c4:f9:8c:d2";
+  //  String errorBleCharacter = "24:0a:c4:f9:8c:d2";
+  // String errorBleCharacter = "scan_evt timeout";
   clock_t start = clock();
   int initializedTimer = 0;
 
@@ -95,6 +99,9 @@ void loop()
                 tm->tm_hour, tm->tm_min, tm->tm_sec);
   Serial.println("");
   delay(1000);
+
+  // auto a = f_internal();
+  // std::cout << f_internal();
 
   log(addrx);
   if (isValidInitialized)
@@ -216,53 +223,55 @@ void loop()
         }
 
         log("---Listing BLE Sensors---");
+        bleScanner();
 
-        BLEScanResults foundSensors = pBLEScan->start(2, false);
-        int count = foundSensors.getCount();
+        // BLEScanResults foundSensors = pBLEScan->start(2, false);
+        // int count = foundSensors.getCount();
 
-        // initBLEScan();
-        // esp_task_wdt_reset(); // reset the watchdog timer
-        for (int j = 0; j < count; j++)
-        {
-          BLEAdvertisedDevice bleSensor = foundSensors.getDevice(j);
-          String sensorName = bleSensor.getName().c_str();
-          String address = bleSensor.getAddress().toString().c_str();
-          log(address + " " + j + " " + sensorName);
-          if (addrx == address)
-          {
-            log("---FIND!!!!---");
-            isValidBle = true;
-            if (isValidBle == true)
-            {
-              log("---BLE On---");
-            }
-            sleep(1);
-            break;
-          }
-          if (!pBLEScan)
-          {
-            // initBLEScan();
-            esp_task_wdt_reset(); // reset the watchdog timer
-          }
-          if (errorBleCharacter == address)
-          {
-            log("---error!!!!---");
-            errorBleCounter = errorBleCounter + 1;
-            log(errorBleCounter);
-            Serial.println(errorBleCounter);
-            sleep(1);
-            break;
-          }
-          isValidBle = false;
-        }
+        // // initBLEScan();
+        // // esp_task_wdt_reset(); // reset the watchdog timer
+        // for (int j = 0; j < count; j++)
+        // {
+        //   BLEAdvertisedDevice bleSensor = foundSensors.getDevice(j);
+        //   String sensorName = bleSensor.getName().c_str();
+        //   String address = bleSensor.getAddress().toString().c_str();
+        //   log(address + " " + j + " " + sensorName);
+        //   if (addrx == address)
+        //   {
+        //     log("---FIND!!!!---");
+        //     isValidBle = true;
+        //     if (isValidBle == true)
+        //     {
+        //       log("---BLE On---");
+        //     }
+        //     sleep(1);
+        //     break;
+        //   }
+        //   if (!pBLEScan)
+        //   {
+        //     // initBLEScan();
+        //     esp_task_wdt_reset(); // reset the watchdog timer
+        //   }
+        //   if (errorBleCharacter == address)
+        //   {
+        //     log("---error!!!!---");
+        //     errorBleCounter = errorBleCounter + 1;
+        //     log(errorBleCounter);
+        //     Serial.println(errorBleCounter);
+        //     sleep(1);
+        //     break;
+        //   }
+        //   isValidBle = false;
+        // }
+        isValidBleV = isValidBle;
         esp_task_wdt_reset(); // reset the watchdog timer
       }
-      if (!isValidBle)
+      if (!isValidBleV)
       {
         log("---BLE Off---");
       }
 
-      if (isValidBle && (WiFi.status() != WL_CONNECTED))
+      if (isValidBleV && (WiFi.status() != WL_CONNECTED))
       {
         digitalWrite(LED_PIN, 1);
         delay(3000);
@@ -271,7 +280,7 @@ void loop()
         // isValidWifi = true;
       }
 
-      if (!isValidBle && (WiFi.status() == WL_CONNECTED))
+      if (!isValidBleV && (WiFi.status() == WL_CONNECTED))
       {
         digitalWrite(LED_PIN, 1);
         delay(3000);

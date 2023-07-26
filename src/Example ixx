@@ -1,3 +1,4 @@
+module;
 // Example.ixx
 export module Example;
 
