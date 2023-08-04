@@ -64,7 +64,8 @@ void bleScanner()
         }
         if (!pBLEScan)
         {
-            // initBLEScan();
+            // initpBLEScan();
+            sleep(10);
             esp_task_wdt_reset(); // reset the watchdog timer
         }
         if (errorBleCharacter == address)
